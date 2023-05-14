@@ -1,0 +1,17 @@
+{
+    "compileOnSave": true,
+    "extends": "@tsconfig/node19/tsconfig.json",
+    "compilerOptions": {
+        "preserveConstEnums": true,
+        "moduleResolution": "node16",
+        "target": "ES2022",
+        "resolveJsonModule": true,
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "baseUrl": "src",
+        "outDir": "dist",
+        "allowJs": false
+    },
+    "include": ["types/**/*.d.ts", "src/**/*"],
+    "exclude": ["node_modules", "**/*.spec.ts", "**/*.js"],
+}
