@@ -1,5 +1,6 @@
 import colors from 'colors';
 import { Command } from './lib/Command.js';
+import { Flag } from './lib/Flag.js';
 
 function replaceCmdAndArg(str: string, name: string, flag: string) {
     return str
@@ -64,29 +65,27 @@ export function logHelpFor(command: Command) {
 
             console.log(`COMMAND: ${colors.green(command.name)} ${colors.yellow('--' + name)}`);
 
-            const flag = command.flags.find(f => f.name === name);
+            const flag = command.flags.find(f => f.name === name) as Flag;
             let msg = '';
 
-            if (flag) {
-                if (flag.options.required) {
-                    msg += colors.red('   (REQUIRED)') + colors.gray(` This argument is required for ${colors.green(command.name)}\n\n`);
-                }
-
-                msg += `   DESCRIPTION: \n      ${colors.gray(flag.options.description ?? "None Provided.")}\n\n`;
-                msg += `   EXAMPLES:`;
-                if (flag.options.examples && flag.options.examples.length > 0) {
-                    msg += colors.gray(`\n      `);
-                    msg += flag.options.examples.map(ex => colors.gray(replaceCmdAndArg(ex, command.name, flag.name))).join(colors.gray(`\n      `));
-                } else {
-                    msg += colors.gray(`\n      No examples provided for this argument.`);
-                }
-
-                msg += colors.reset('\n\n   USAGE:');
-                msg += colors.reset('\n      ' + colors.underline(colors.green(`${command.name}`)) + colors.gray(` ${replaceCmdAndArg(flag.getUsage(), command.name, flag.name) || ''}`));
-                msg += colors.reset('\n');
-
-                console.log(msg);
+            if (flag.options.required) {
+                msg += colors.red('   (REQUIRED)') + colors.gray(` This argument is required for ${colors.green(command.name)}\n\n`);
             }
+
+            msg += `   DESCRIPTION: \n      ${colors.gray(flag.options.description ?? "None Provided.")}\n\n`;
+            msg += `   EXAMPLES:`;
+            if (flag.options.examples && flag.options.examples.length > 0) {
+                msg += colors.gray(`\n      `);
+                msg += flag.options.examples.map(ex => colors.gray(replaceCmdAndArg(ex, command.name, flag.name))).join(colors.gray(`\n      `));
+            } else {
+                msg += colors.gray(`\n      No examples provided for this argument.`);
+            }
+
+            msg += colors.reset('\n\n   USAGE:');
+            msg += colors.reset('\n      ' + colors.underline(colors.green(`${command.name}`)) + colors.gray(` ${replaceCmdAndArg(flag.getUsage(), command.name, flag.name) || ''}`));
+            msg += colors.reset('\n');
+
+            console.log(msg);
         }
 
         if (Object.keys(flags).length > 1) {
@@ -127,6 +126,7 @@ export function logHelpFor(command: Command) {
 
 export function logHelp(commands?: Command[]) {
     const args = process.argv.slice(2);
+    const longestNamedCommand = commands?.sort((a, b) => b.name.length - a.name.length)[0].name.length ?? 0;
 
     if (args[1]) {
         // hijack the help command
@@ -143,8 +143,8 @@ export function logHelp(commands?: Command[]) {
 
     let hMsg = [
         colors.white('USAGE:'),
-        command('help', 'Show this help message.'),
-        ...commands?.map(cmd => command(cmd.name, cmd.description)) ?? [],
+        command('help', 'Show this help message.', longestNamedCommand),
+        ...commands?.map(cmd => command(cmd.name, cmd.description, longestNamedCommand)) ?? [],
         // inject help message
     ]
 
@@ -153,8 +153,8 @@ export function logHelp(commands?: Command[]) {
     }
 }
 
-function command(name: string, description: string) {
-    let msg = `   ${colors.green(name)}`.padStart(3).padEnd(25);
+function command(name: string, description: string, longestNamedCommand: number) {
+    let msg = `   ${colors.green(name)}`.padStart(3).padEnd(longestNamedCommand + 15, ' ');
     msg += colors.gray(description);
     return msg;
 }

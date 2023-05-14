@@ -10,6 +10,7 @@ export class ListLabels extends Command {
     public flags = [
         new Flag('repository', {
             required: true,
+            aliases: ['repo', 'r'],
             description: 'The repository to list labels from.',
             value: /(?:[a-z0-9\-]*\/[a-z0-9\-_]*)/ig,
             examples: [

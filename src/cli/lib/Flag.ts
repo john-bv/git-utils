@@ -112,8 +112,8 @@ export class Flag {
         const namedFlagWithVal = /(--[a-z0-9\S]+)+ ?((?=((\'[\s\S]+\')+)|(\"[\s\S]+\")|(?=([\S]+)))|)/ig;
         // const aliasFlagWithVal = /(-[a-z0-9\S]+)+ ?(?=((\'[\s\S]+\')+)|(\"[\s\S]+\")|([\S]+))/ig;
         const aliasFlagWithVal = /(-[a-z0-9\S]+)+ ?((?=((\'[\s\S]+\')+)|(\"[\s\S]+\")|(?=([\S]+)))|)/ig;
-        const namedFlag = /--([a-z0-9\S]+)/ig;
-        const aliasFlag = /-([a-z0-9\S]+)/ig;
+        const namedFlag = /\s--([a-z0-9\S]+)/ig;
+        const aliasFlag = /\s-([a-z0-9\S]+)/ig;
 
         if (namedFlag.test(argsList) === true) {
             const value = this.parseArgValueFlag(argsList, namedFlagWithVal);
